@@ -1,7 +1,8 @@
 set -e
 
-yarn run copy
-yarn run build
+rm -rf dist
+mkdir ./dist && cp ./src/index.html ./dist/
+esbuild src/main.ts --sourcemap --outdir=dist
 
 cd dist
 
