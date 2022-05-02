@@ -2,8 +2,8 @@
   "name": "game-of-life",
   "scripts": {
     "copy": "mkdir ./dist && cp ./src/index.html ./dist/",
-    "build": "esbuild src/main.ts --sourcemap --outdir=dist",
-    "start": "esbuild src/main.ts --sourcemap --outdir=dist --servedir=dist"
+    "build": "esbuild src/main.ts --sourcemap --outdir=dist --bundle",
+    "start": "esbuild src/main.ts --sourcemap --outdir=dist --bundle --servedir=dist"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",

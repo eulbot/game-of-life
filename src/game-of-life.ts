@@ -1,29 +1,16 @@
-function getNeighbours(gol: boolean[][], col: number, row: number): number[][] {
+function getNeighbours(gol: boolean[][], col: number, row: number): Array<{c: number, r: number}> {
   const rows = gol.length - 1;
   const cols = gol[0].length - 1;
 
   return [col == 0 ? rows : col - 1, col, col >= rows ? 0 : col + 1]
-    .flatMap((c) => [row == 0 ? cols : row - 1, row, row >= cols ? 0 : row + 1].map((r) => [c, r]))
-    .filter((v) => !(v[0] == col && v[1] == row));
+    .flatMap((c) => [row == 0 ? cols : row - 1, row, row >= cols ? 0 : row + 1].map((r) => ({ c: c, r: r })))
+    .filter((v) => !(v.c == col && v.r == row));
 }
 
-const neighbors = (gol: boolean[][], col: number, row: number) => {
-  const width = gol.length;
-  const height = gol[0].length;
-  let result = 0;
-
-  const cols = [col == 0 ? width - 1 : col - 1, col, col + 1 >= width ? 0 : col + 1];
-  const rows = [row == 0 ? height - 1 : row - 1, row, row + 1 >= height ? 0 : row + 1];
-
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      if (!(i == 1 && j == 1)) {
-        result += gol[cols[i]][rows[j]] ? 1 : 0;
-      }
-    }
-  }
-  return result;
-};
+function getLiveCount(gol: boolean[][], col: number, row: number) {
+  const neighbors = getNeighbours(gol, col, row);
+  return neighbors.reduce((p, n) => p + (gol[n.c][n.r] ? 1 : 0), 0);
+}
 
 function setupBoard(cols: number, rows: number, seed?: number) {
   return Array<boolean>(cols)
@@ -38,7 +25,14 @@ function setupBoard(cols: number, rows: number, seed?: number) {
 function evolve(gol: boolean[][]): boolean[][] {
   let prev = gol.map((inner) => inner.slice());
 
-  return prev;
+  for (let x = 0; x < gol.length; x++) {
+    for (let y = 0; y < gol[x].length; y++) {
+      const n = getLiveCount(prev, x, y);
+      if (gol[x][y] == false && n == 3) gol[x][y] = true;
+      if (gol[x][y] == true && !(n == 2 || n == 3)) gol[x][y] = false;
+    }
+  }
+  return gol;
 }
 
-export { getNeighbours, setupBoard };
+export { getNeighbours, setupBoard, evolve };
