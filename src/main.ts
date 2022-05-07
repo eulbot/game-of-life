@@ -31,9 +31,13 @@ function init() {
     hydrate(e);
   });
   canvas.addEventListener('mousemove', (e) => hydrate(e));
+  canvas.addEventListener('touchmove', (e) => {
+    if (e.touches.length <= 0) return 0;
+    hydrate(e.touches[0]);
+  });
   canvas.addEventListener('mouseup', () => (suspend = false));
 
-  function hydrate(e: MouseEvent) {
+  function hydrate(e: MouseEvent | Touch) {
     if (!suspend) return 0;
     let x = Math.floor(e.pageX / SQAURE_SIZE);
     let y = Math.floor(e.pageY / SQAURE_SIZE);
