@@ -36,16 +36,22 @@ function init() {
     }, 200),
   );
 
-  canvas.addEventListener('mousedown', (e) => {
-    suspend = true;
-    hydrate(e);
-  });
-  canvas.addEventListener('mousemove', (e) => hydrate(e));
-  canvas.addEventListener('touchmove', (e) => {
-    if (e.touches.length <= 0) return 0;
-    hydrate(e.touches[0]);
-  });
-  canvas.addEventListener('mouseup', () => (suspend = false));
+  function isTouch(e: MouseEvent | TouchEvent): e is TouchEvent {
+    return (e as TouchEvent).touches !== undefined;
+  }
+
+  ['mousedown', 'touchstart'].forEach((t) =>
+    window.addEventListener(t, (e: MouseEvent | TouchEvent) => {
+      suspend = true;
+      hydrate(isTouch(e) ? e.touches[0] : e);
+    }),
+  );
+
+  ['mousemove', 'touchmove'].forEach((t) =>
+    window.addEventListener(t, (e: MouseEvent | TouchEvent) => hydrate(isTouch(e) ? e.touches[0] : e)),
+  );
+
+  ['mouseup', 'touchend'].forEach((t) => window.addEventListener(t, (e: MouseEvent | TouchEvent) => (suspend = false)));
 
   function hydrate(e: MouseEvent | Touch) {
     if (!suspend) return 0;
