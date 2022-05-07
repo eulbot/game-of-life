@@ -1,4 +1,4 @@
-function getNeighbours(gol: boolean[][], col: number, row: number): Array<{c: number, r: number}> {
+function getNeighbours(gol: boolean[][], col: number, row: number): Array<{ c: number; r: number }> {
   const rows = gol.length - 1;
   const cols = gol[0].length - 1;
 

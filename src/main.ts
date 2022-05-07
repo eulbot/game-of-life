@@ -6,7 +6,7 @@ const ctx = canvas.getContext('2d');
 
 function drawBoard(gol: boolean[][]) {
   ctx.fillStyle = 'black';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillRect(0, 1, canvas.width, canvas.height);
 
   for (let x = 0; x < gol.length; x++) {
     for (let y = 0; y < gol[x].length; y++) {
@@ -17,6 +17,7 @@ function drawBoard(gol: boolean[][]) {
 }
 
 function init() {
+  var suspend = false;
   const w = document.body.clientWidth;
   const h = document.body.clientHeight;
 
@@ -25,11 +26,28 @@ function init() {
 
   var gol = setupBoard(Math.ceil(w / SQAURE_SIZE), Math.ceil(h / SQAURE_SIZE), 0.85);
 
+  canvas.addEventListener('mousedown', (e) => {
+    suspend = true;
+    hydrate(e);
+  });
+  canvas.addEventListener('mousemove', (e) => hydrate(e));
+  canvas.addEventListener('mouseup', () => (suspend = false));
+
+  function hydrate(e: MouseEvent) {
+    if (!suspend) return 0;
+    let x = Math.floor(e.pageX / SQAURE_SIZE);
+    let y = Math.floor(e.pageY / SQAURE_SIZE);
+    gol[x][y] = true;
+    drawBoard(gol);
+  }
+
   function animate() {
     const fps = 10;
 
-    drawBoard(gol);
-    gol = evolve(gol);
+    if (!suspend) {
+      drawBoard(gol);
+      gol = evolve(gol);
+    }
 
     setTimeout(() => {
       requestAnimationFrame(animate);
