@@ -1,4 +1,5 @@
 import { evolve, setupBoard } from './game-of-life';
+import { debounce } from './helpers';
 
 const SQAURE_SIZE = 20;
 const canvas = document.getElementById('playground') as HTMLCanvasElement;
@@ -16,15 +17,24 @@ function drawBoard(gol: boolean[][]) {
   }
 }
 
-function init() {
-  var suspend = false;
+function setupCanvas() {
   const w = document.body.clientWidth;
   const h = document.body.clientHeight;
-
   canvas.width = w;
   canvas.height = h;
+  return setupBoard(Math.ceil(w / SQAURE_SIZE), Math.ceil(h / SQAURE_SIZE), 0.85);
+}
 
-  var gol = setupBoard(Math.ceil(w / SQAURE_SIZE), Math.ceil(h / SQAURE_SIZE), 0.85);
+function init() {
+  var gol = setupCanvas();
+  var suspend = false;
+
+  window.addEventListener(
+    'resize',
+    debounce(() => {
+      gol = setupCanvas();
+    }, 200),
+  );
 
   canvas.addEventListener('mousedown', (e) => {
     suspend = true;
@@ -60,5 +70,4 @@ function init() {
   animate();
 }
 
-//document.addEventListener('resize', setupBoard);
 init();
